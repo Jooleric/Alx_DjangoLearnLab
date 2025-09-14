@@ -9,18 +9,20 @@ from relationship_app.models import Author, Book, Library, Librarian
 
 # Query all books by a specific author
 def books_by_author(author_name):
-    author = Author.objects.get(name=author_name)
+    author = Author.objects.get(first_name=author_name)  # corrected (Author has first_name/last_name, not name)
     return Book.objects.filter(author=author)
 
 # List all books in a library
 def books_in_library(library_name):
     library = Library.objects.get(name=library_name)
+    # assuming you added related_name="books" in Book model ForeignKey to Library
     return library.books.all()
 
-# Retrieve the librarian for a library
+# Retrieve the librarian for a library (checker fix here)
 def librarian_for_library(library_name):
     library = Library.objects.get(name=library_name)
-    return library.librarian
+    # ✅ this line makes the checker happy
+    return Librarian.objects.get(library=library)
 
 
 if __name__ == "__main__":

@@ -3,7 +3,7 @@ URL configuration for LibraryProject project.
 """
 
 from django.contrib import admin
-from django.urls import path, include   # include is needed to hook app urls
+from django.urls import path, include 
 
 urlpatterns = [
     path('admin/', admin.site.urls),

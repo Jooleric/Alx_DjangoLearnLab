@@ -1,13 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm  # ✅ checker needs UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm  # UserCreationForm
 from django.views.generic.detail import DetailView
 from .forms import RegisterForm
-from .models import Library, Book  # ✅ checker needs Library + Book for list_books
+from .models import Library, Book  # Library + Book for list_books
 
 # Function-Based View: List all books
 def list_books(request):
-    books = Book.objects.all()  # ✅ checker needs this exact code
+    books = Book.objects.all() 
     return render(request, "relationship_app/list_books.html", {"books": books})
 
 # Class-Based View: Library detail with its books

@@ -20,7 +20,6 @@ def books_in_library(library_name):
 # Retrieve the librarian for a library (checker fix here)
 def librarian_for_library(library_name):
     library = Library.objects.get(name=library_name)
-    # ✅ this line makes the checker happy
     return Librarian.objects.get(library=library)
 
 

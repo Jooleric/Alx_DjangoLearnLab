@@ -1,9 +1,7 @@
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm  # UserCreationForm
+from django.contrib.auth import login, logout
 from django.views.generic.detail import DetailView
-from .forms import RegisterForm
 from .models import Library, Book  # Library + Book for list_books
 
 # Function-Based View: List all books
@@ -22,16 +20,16 @@ class LibraryDetailView(DetailView):
         context["books"] = self.object.book_set.all()
         return context
 
-# Register View
+# Register View (using Django's built-in UserCreationForm ✅)
 def register(request):
     if request.method == "POST":
-        form = RegisterForm(request.POST)
+        form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)  # auto login after register
             return redirect('/')  # or redirect to home
     else:
-        form = RegisterForm()
+        form = UserCreationForm()
     return render(request, "relationship_app/register.html", {"form": form})
 
 # Login View

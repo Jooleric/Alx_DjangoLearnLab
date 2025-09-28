@@ -1,4 +1,4 @@
-from rest_framewo import generics
+from rest_framewo import generics.ListAPIViews
 from rest_framework import generics
 from rest_framework import viewsets
 from .models import Book

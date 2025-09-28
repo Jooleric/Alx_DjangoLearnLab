@@ -1,4 +1,4 @@
-from rest_framewor import ListAPIView
+from rest_framewo import generics
 from rest_framework import generics
 from rest_framework import viewsets
 from .models import Book
@@ -6,7 +6,7 @@ from .serializers import BookSerializer
 
 
 # ListAPIView
-class BookList(ListAPIView):
+class BookList(generocs.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
 

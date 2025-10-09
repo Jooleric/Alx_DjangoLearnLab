@@ -7,7 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 
 from .serializers import RegistrationSerializer, UserSerializer
 
-User = get_user_model()
+CustomUser = get_user_model()
+User = CustomUser
 
 
 # --- User Registration View ---

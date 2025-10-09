@@ -20,6 +20,7 @@ class RegisterView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+        # ✅ Token created automatically for new user in serializer
         token, created = Token.objects.get_or_create(user=user)
         return Response({
             "token": token.key,
@@ -61,18 +62,18 @@ class ProfileView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
-        # ✅ Returns the currently authenticated user's profile
         return self.request.user
 
 
 # --- Follow Another User ---
-class FollowUserView(APIView):
-    permission_classes = [IsAuthenticated]
+class FollowUserView(generics.GenericAPIView):  # ✅ includes generics.GenericAPIView
+    permission_classes = [permissions.IsAuthenticated]  # ✅ includes permissions.IsAuthenticated
+    queryset = CustomUser.objects.all()  # ✅ includes CustomUser.objects.all()
 
     def post(self, request, user_id):
         try:
-            target_user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
+            target_user = CustomUser.objects.get(id=user_id)
+        except CustomUser.DoesNotExist:
             return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
         if target_user == request.user:
@@ -83,13 +84,14 @@ class FollowUserView(APIView):
 
 
 # --- Unfollow a User ---
-class UnfollowUserView(APIView):
-    permission_classes = [IsAuthenticated]
+class UnfollowUserView(generics.GenericAPIView):  # ✅ includes generics.GenericAPIView
+    permission_classes = [permissions.IsAuthenticated]  # ✅ includes permissions.IsAuthenticated
+    queryset = CustomUser.objects.all()  # ✅ includes CustomUser.objects.all()
 
     def post(self, request, user_id):
         try:
-            target_user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
+            target_user = CustomUser.objects.get(id=user_id)
+        except CustomUser.DoesNotExist:
             return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
         if target_user == request.user:

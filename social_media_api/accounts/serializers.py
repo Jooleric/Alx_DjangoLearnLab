@@ -6,6 +6,7 @@ User = get_user_model()
 
 class RegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, min_length=8)  # ✅ Explicit CharField
+    confirm_password = serializers.CharField()
 
     class Meta:
         model = User

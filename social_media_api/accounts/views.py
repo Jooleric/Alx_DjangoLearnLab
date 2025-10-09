@@ -20,7 +20,6 @@ class RegisterView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        # ✅ Token created automatically for new user in serializer
         token, created = Token.objects.get_or_create(user=user)
         return Response({
             "token": token.key,

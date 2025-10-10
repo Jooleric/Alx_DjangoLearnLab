@@ -1,7 +1,6 @@
-from rest_framework import viewsets, permissions, filters, status
+from rest_framework import viewsets, permissions, filters, status, generics
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from django.shortcuts import get_object_or_404
 from django.db.models import Q
 
 from .models import Post, Comment, Like
@@ -51,19 +50,18 @@ class PostViewSet(viewsets.ModelViewSet):
         """
         Allows a user to like a post (if not already liked).
         """
-        post = get_object_or_404(Post, pk=pk)
-        user = request.user
+        post = generics.get_object_or_404(Post, pk=pk)
 
-        like, created = Like.objects.get_or_create(post=post, user=user)
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
 
         if not created:
             return Response({'detail': 'You have already liked this post.'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Create a notification for the post author
-        if post.author != user:
+        if post.author != request.user:
             Notification.objects.create(
                 recipient=post.author,
-                actor=user,
+                actor=request.user,
                 verb="liked your post",
                 target=post
             )
@@ -76,10 +74,9 @@ class PostViewSet(viewsets.ModelViewSet):
         """
         Allows a user to unlike a post they previously liked.
         """
-        post = get_object_or_404(Post, pk=pk)
-        user = request.user
+        post = generics.get_object_or_404(Post, pk=pk)
+        like = Like.objects.filter(user=request.user, post=post)
 
-        like = Like.objects.filter(post=post, user=user)
         if not like.exists():
             return Response({'detail': 'You have not liked this post yet.'}, status=status.HTTP_400_BAD_REQUEST)
 

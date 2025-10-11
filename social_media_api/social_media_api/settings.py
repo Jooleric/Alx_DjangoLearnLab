@@ -79,7 +79,14 @@ WSGI_APPLICATION = 'social_media_api.wsgi.application'
 # Database configuration
 # ---------------------------------------------------------
 DATABASES = {
-    'default': env.db(default=f'sqlite:///{BASE_DIR / "db.sqlite3"}')
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',  # or 'django.db.backends.postgresql'
+        'NAME': BASE_DIR / 'db.sqlite3',
+        'USER': env('DB_USER', default=''),
+        'PASSWORD': env('DB_PASSWORD', default=''),
+        'HOST': env('DB_HOST', default='localhost'),
+        'PORT': env('DB_PORT', default='5432'),  # ✅ add this line explicitly
+    }
 }
 
 # ---------------------------------------------------------

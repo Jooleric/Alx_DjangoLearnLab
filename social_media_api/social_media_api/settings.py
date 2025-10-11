@@ -11,7 +11,7 @@ import environ  # ✅ Import environ here
 # ---------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env(
-    DEBUG=(bool, False)
+    DEBUG = False
 )
 
 # Read .env file (located in the project root)

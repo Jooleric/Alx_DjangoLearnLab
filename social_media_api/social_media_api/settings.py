@@ -3,21 +3,30 @@ Django settings for social_media_api project.
 """
 
 from pathlib import Path
-import os  # ✅ Import once here (not at the bottom)
+import os
+import environ  # ✅ Import environ here
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# ---------------------------------------------------------
+# Initialize environment variables
+# ---------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
+env = environ.Env(
+    DEBUG=(bool, False)
+)
 
+# Read .env file (located in the project root)
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-# Quick-start development settings - unsuitable for production
-SECRET_KEY = 'django-insecure-m8&d6&pb+ta!5choi$^wztv0p_ser_cnuucd&uel8%6m@#pq8k'
+# ---------------------------------------------------------
+# Core settings
+# ---------------------------------------------------------
+SECRET_KEY = env('SECRET_KEY', default='unsafe-secret-key-for-dev')
+DEBUG = env('DEBUG', default=False)
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost'])
 
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
-
+# ---------------------------------------------------------
 # Application definition
+# ---------------------------------------------------------
 INSTALLED_APPS = [
     # Django default apps
     'django.contrib.admin',
@@ -66,17 +75,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'social_media_api.wsgi.application'
 
-
-# Database
+# ---------------------------------------------------------
+# Database configuration
+# ---------------------------------------------------------
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': env.db(default=f'sqlite:///{BASE_DIR / "db.sqlite3"}')
 }
 
-
+# ---------------------------------------------------------
 # Password validation
+# ---------------------------------------------------------
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -84,28 +92,31 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
+# ---------------------------------------------------------
 # Internationalization
+# ---------------------------------------------------------
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-
-# Static files
+# ---------------------------------------------------------
+# Static and media files
+# ---------------------------------------------------------
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Media (for user profile pictures, etc.)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-
+# ---------------------------------------------------------
 # Default primary key field type
+# ---------------------------------------------------------
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-# --- Django REST Framework configuration ---
+# ---------------------------------------------------------
+# Django REST Framework configuration
+# ---------------------------------------------------------
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
@@ -116,6 +127,39 @@ REST_FRAMEWORK = {
     ),
 }
 
-
-# --- Custom User Model ---
+# ---------------------------------------------------------
+# Custom User Model
+# ---------------------------------------------------------
 AUTH_USER_MODEL = 'accounts.User'
+
+# ---------------------------------------------------------
+# Security settings for production
+# ---------------------------------------------------------
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_SSL_REDIRECT = env.bool('SECURE_SSL_REDIRECT', default=False)
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+# ---------------------------------------------------------
+# Logging configuration
+# ---------------------------------------------------------
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'errors.log'),
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}
